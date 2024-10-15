@@ -18,6 +18,7 @@ public class UIManager : MonoBehaviour
 #region UI Elements
     [SerializeField] private Transform crosshair;
     [SerializeField] private Transform target;
+    [SerializeField] private LayerMask groundLayer;
 #endregion 
 
 #region Singleton
@@ -79,10 +80,19 @@ public class UIManager : MonoBehaviour
 
     private void MoveCrosshair() 
     {
-        Vector2 mousePos = mouseAction.ReadValue<Vector2>();
+        Vector2 mousePos = new Vector3(mouseAction.ReadValue<Vector2>().x,mouseAction.ReadValue<Vector2>().y, 0);
+        Vector3 raycastPoint = new Vector3(0, 0, 0);
 
-        // FIXME: Move the crosshair position to the mouse position (in world coordinates)
-        // crosshair.position = ...;
+        Ray cameraToGround = Camera.main.ScreenPointToRay(mousePos);
+        float distance = float.PositiveInfinity;
+
+        RaycastHit hit;
+
+        if(Physics.Raycast(cameraToGround.origin, cameraToGround.direction, out hit, distance, groundLayer))
+        {
+            raycastPoint = hit.point;
+            crosshair.position = raycastPoint;
+        }
     }
 
     private void SelectTarget()
