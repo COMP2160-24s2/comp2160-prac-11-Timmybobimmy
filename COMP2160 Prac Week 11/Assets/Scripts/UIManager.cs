@@ -8,6 +8,7 @@
  * For Unity Version: 2022.3
  */
 
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -18,7 +19,10 @@ public class UIManager : MonoBehaviour
 #region UI Elements
     [SerializeField] private Transform crosshair;
     [SerializeField] private Transform target;
-    [SerializeField] private LayerMask groundLayer;
+    [SerializeField] private float planeYDistance; // y-distance of plane to camera
+    [SerializeField] private bool oldCrosshair; // switch between crosshair modes step 4/5
+    private Plane plane;
+    private Vector3 planeCameraDistance;
 #endregion 
 
 #region Singleton
@@ -78,20 +82,31 @@ public class UIManager : MonoBehaviour
         SelectTarget();
     }
 
+    void Start()
+    {
+        planeCameraDistance = new Vector3(Camera.main.transform.position.x, Camera.main.transform.position.y - planeYDistance, Camera.main.transform.position.z);
+        plane = new Plane(Vector3.up, planeCameraDistance); // normal vector n, right angle to plane
+    }
+
     private void MoveCrosshair() 
     {
-        Vector2 mousePos = new Vector3(mouseAction.ReadValue<Vector2>().x,mouseAction.ReadValue<Vector2>().y, 0);
-        Vector3 raycastPoint = new Vector3(0, 0, 0);
-
-        Ray cameraToGround = Camera.main.ScreenPointToRay(mousePos);
-        float distance = float.PositiveInfinity;
-
-        RaycastHit hit;
-
-        if(Physics.Raycast(cameraToGround.origin, cameraToGround.direction, out hit, distance, groundLayer))
+        if(oldCrosshair)
         {
-            raycastPoint = hit.point;
-            crosshair.position = raycastPoint;
+            Vector2 mousePos = new Vector3(mouseAction.ReadValue<Vector2>().x,mouseAction.ReadValue<Vector2>().y, 0);
+            Ray cameraToGround = Camera.main.ScreenPointToRay(mousePos); // Ray from camera passing through mouse cursor position
+
+            float enter = 0.0f;
+            Vector3 raycastPoint = new Vector3();
+
+            if(plane.Raycast(cameraToGround, out enter))
+            {
+                raycastPoint = cameraToGround.GetPoint(enter);
+                crosshair.position = raycastPoint;
+            }
+        }
+        else
+        {
+            // new way to move crosshair using mouse.delta
         }
     }
 

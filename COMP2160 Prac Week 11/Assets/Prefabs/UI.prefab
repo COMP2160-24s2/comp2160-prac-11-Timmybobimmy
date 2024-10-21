@@ -48,9 +48,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   crosshair: {fileID: 7485987256551808895}
   target: {fileID: 2155366059082070411}
-  groundLayer:
-    serializedVersion: 2
-    m_Bits: 64
+  planeYDistance: 9.5
+  oldCrosshair: 1
 --- !u!1 &3945490509769068079
 GameObject:
   m_ObjectHideFlags: 0

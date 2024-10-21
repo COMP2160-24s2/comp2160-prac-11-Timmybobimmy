@@ -6,8 +6,9 @@ using UnityEngine.InputSystem;
 public class CameraZoom : MonoBehaviour
 {
     [SerializeField] Vector2 ZoomRange;
+    [SerializeField] Vector2 ZoomRangeOrtho;
     [SerializeField] float zoomSpeed;
-    [SerializeField] float zoomSpeedOrthographic;
+    [SerializeField] float zoomSpeedOrtho;
     private Actions actions;
     private InputAction zoomAction;
 
@@ -29,32 +30,33 @@ public class CameraZoom : MonoBehaviour
 
     void Update()
     {
-        Mathf.Clamp(Camera.main.fieldOfView, ZoomRange.x, ZoomRange.y);
-        Mathf.Clamp(Camera.main.orthographicSize, ZoomRange.x, ZoomRange.y);
-
         float zoomInput = zoomAction.ReadValue<float>();
         bool isOrthographic = Camera.main.orthographic;
 
         if(!isOrthographic)
         {
-            if(zoomInput == 120)
+            Camera.main.fieldOfView = Mathf.Clamp(Camera.main.fieldOfView, ZoomRange.x, ZoomRange.y);
+
+            if(zoomInput > 0)
             {
-                Camera.main.fieldOfView += zoomSpeed;
+                Camera.main.fieldOfView -= zoomSpeed; // Zoom in
             }
-            if(zoomInput == -120)
+            if(zoomInput < 0)
             {
-                Camera.main.fieldOfView -= zoomSpeed;
+                Camera.main.fieldOfView += zoomSpeed; // Zoom out
             }
         }
         else 
         {
-            if(zoomInput == 120)
+            Camera.main.orthographicSize = Mathf.Clamp(Camera.main.orthographicSize, ZoomRangeOrtho.x, ZoomRangeOrtho.y);
+
+            if(zoomInput > 0)
             {
-                Camera.main.orthographicSize += zoomSpeedOrthographic;
+                Camera.main.orthographicSize -= zoomSpeedOrtho; // Zoom in
             }
-            if(zoomInput == -120)
+            if(zoomInput < 0)
             {
-                Camera.main.orthographicSize -= zoomSpeedOrthographic;
+                Camera.main.orthographicSize += zoomSpeedOrtho; // Zoom out
             }
         }
     }
