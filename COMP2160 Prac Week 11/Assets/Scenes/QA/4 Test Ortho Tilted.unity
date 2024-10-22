@@ -147,6 +147,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5450362575394769019, guid: b96044efa2ae54750ad24e39e1352865,
         type: 3}
+      propertyPath: oldCrosshair
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5450362575394769019, guid: b96044efa2ae54750ad24e39e1352865,
+        type: 3}
       propertyPath: planeYDistance
       value: 9.5
       objectReference: {fileID: 0}
@@ -549,7 +554,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   target: {fileID: 923977101}
+  target2: {fileID: 0}
   gizmoRadius: 0.5
+  proportionBetween: 2
 --- !u!4 &1588787997
 Transform:
   m_ObjectHideFlags: 0

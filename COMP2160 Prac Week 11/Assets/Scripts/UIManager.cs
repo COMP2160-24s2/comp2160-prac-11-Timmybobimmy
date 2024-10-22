@@ -106,7 +106,29 @@ public class UIManager : MonoBehaviour
         }
         else
         {
-            // new way to move crosshair using mouse.delta
+            // new way to move crosshair using mouse.delta (change in mouse screen position)
+            Vector2 mousePos = new Vector3(mouseAction.ReadValue<Vector2>().x,mouseAction.ReadValue<Vector2>().y, 0);
+            Ray cameraToGround = Camera.main.ScreenPointToRay(mousePos);
+
+            Vector2 mouseDelta = new Vector3(deltaAction.ReadValue<Vector2>().x,deltaAction.ReadValue<Vector2>().y, 0);
+
+            float enter = 0.0f;
+            Vector3 raycastPoint = new Vector3();
+
+            if(plane.Raycast(cameraToGround, out enter))
+            {
+                //raycastPoint = cameraToGround.GetPoint(enter);
+                Vector2 crosshairScreenPos = Camera.main.WorldToScreenPoint(crosshair.position);
+                crosshairScreenPos += mouseDelta;
+                
+                Ray crosshairScreenToWorld = Camera.main.ScreenPointToRay(crosshairScreenPos);
+                
+                if(plane.Raycast(crosshairScreenToWorld, out enter))
+                {
+                    raycastPoint = crosshairScreenToWorld.GetPoint(enter);
+                    crosshair.position = raycastPoint;
+                }
+            }
         }
     }
 
