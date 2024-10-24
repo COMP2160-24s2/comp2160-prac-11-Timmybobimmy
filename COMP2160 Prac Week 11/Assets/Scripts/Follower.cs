@@ -27,7 +27,8 @@ public class Follower : MonoBehaviour
         }
         else
         {
-            midpoint = (target2.position - target.position)/proportionBetween;
+            midpoint = new Vector3(target.position.x + (target2.position.x - target.position.x)/proportionBetween, 
+            0, target.position.z + (target2.position.z - target.position.z)/proportionBetween);
             transform.position = midpoint;
         }
     }

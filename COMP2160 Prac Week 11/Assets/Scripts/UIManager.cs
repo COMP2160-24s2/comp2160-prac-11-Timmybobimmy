@@ -11,6 +11,7 @@
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using WordsOnPlay.Utils;
 
 // note this has to run earlier than other classes which subscribe to the TargetSelected event
 [DefaultExecutionOrder(-100)]
@@ -106,28 +107,28 @@ public class UIManager : MonoBehaviour
         }
         else
         {
-            // new way to move crosshair using mouse.delta (change in mouse screen position)
-            Vector2 mousePos = new Vector3(mouseAction.ReadValue<Vector2>().x,mouseAction.ReadValue<Vector2>().y, 0);
-            Ray cameraToGround = Camera.main.ScreenPointToRay(mousePos);
-
+            // using mouse.delta
             Vector2 mouseDelta = new Vector3(deltaAction.ReadValue<Vector2>().x,deltaAction.ReadValue<Vector2>().y, 0);
+            Rect screenRect = new Rect(0, 0, Screen.width, Screen.height);
+            
+            Vector2 crosshairScreenPos = Camera.main.WorldToScreenPoint(crosshair.position);
+            crosshairScreenPos += mouseDelta;
+            crosshairScreenPos = RectExtensions.Clamp(screenRect, crosshairScreenPos); // Keep crosshair onscreen!
+
+            Ray crosshairScreenRay = new Ray();
+
+            if(mouseDelta.x != 0 & mouseDelta.y != 0) // only set ray when screen position of mouse changes
+            {
+                crosshairScreenRay = Camera.main.ScreenPointToRay(crosshairScreenPos);
+            }
 
             float enter = 0.0f;
             Vector3 raycastPoint = new Vector3();
-
-            if(plane.Raycast(cameraToGround, out enter))
+                
+            if(plane.Raycast(crosshairScreenRay, out enter))
             {
-                //raycastPoint = cameraToGround.GetPoint(enter);
-                Vector2 crosshairScreenPos = Camera.main.WorldToScreenPoint(crosshair.position);
-                crosshairScreenPos += mouseDelta;
-                
-                Ray crosshairScreenToWorld = Camera.main.ScreenPointToRay(crosshairScreenPos);
-                
-                if(plane.Raycast(crosshairScreenToWorld, out enter))
-                {
-                    raycastPoint = crosshairScreenToWorld.GetPoint(enter);
-                    crosshair.position = raycastPoint;
-                }
+                raycastPoint = crosshairScreenRay.GetPoint(enter);
+                crosshair.position = raycastPoint;
             }
         }
     }
